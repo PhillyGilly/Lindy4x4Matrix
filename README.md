@@ -17,6 +17,8 @@ I created an excel spreadsheet (appened) which calculated the complete commands 
 
 The command hex string codes are A short period of monitoring the PC app using Wireshark coobservation of the I tried a number of Using Wireshark it is possible to 
 
+![image](https://github.com/PhillyGilly/Lindy4x4Matrix/assets/56273663/f0ccefd6-6e44-4631-8788-e903bcd8140c)
+
 
 ```
 
