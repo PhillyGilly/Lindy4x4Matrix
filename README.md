@@ -361,3 +361,55 @@ actions:
             action: switch.turn_off
 mode: single
 ```
+If you are feeling bold you can dramatically shorten this like so:
+```
+alias: 33a. Lindy brief
+description: ""
+triggers:
+  - entity_id:
+      - sensor.lindy_lounge_tv
+      - sensor.lindy_kitchen_tv
+      - sensor.lindy_bed3_tv
+      - sensor.lindy_bed1_tv
+    trigger: state
+  - at: "03:00:00"
+    trigger: time
+conditions: []
+actions:
+  - if:
+      - condition: template
+        value_template: "{{ trigger.platform == 'state' }}"
+    then:
+      - variables:
+          room: "{{ trigger.to_state.object_id.split('_')[1] }}"
+          mode: "{{ states('input_select.lindy_' ~ room) | lower }}"
+      - action: shell_command.{{ room }}_to_{{ mode }}
+    else:
+      - variables:
+          selects:
+            - input_select.lindy_lounge
+            - input_select.lindy_kitchen
+            - input_select.lindy_bed1
+            - input_select.lindy_bed3
+      - repeat:
+          for_each: |
+            {{ expand(selects) | selectattr('state', 'ne', 'Sky')
+              | map(attribute='entity_id') | list }}
+          sequence:
+            - variables:
+                room: "{{ repeat.item.split('_')[-1] }}"
+            - action: shell_command.{{ room }}_to_sky
+            - data:
+                option: Sky
+              target:
+                entity_id: input_select.lindy_{{ room }}
+              action: input_select.select_option
+      - delay:
+          seconds: 10
+      - target:
+          entity_id: switch.lindy_hdmi_matrix
+        data: {}
+        action: switch.turn_off
+mode: single
+```
+Good luck!
